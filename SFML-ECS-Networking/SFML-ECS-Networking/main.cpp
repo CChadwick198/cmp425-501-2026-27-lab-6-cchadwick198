@@ -232,11 +232,16 @@ int main() {
 					// Get actual position based on interpolation method.
 					sf::Vector2f interpolated_pos = player_connections[i].Interpolate(dt);
 
+					// Predict the latest position of the player then interpolate to it.
+					/*sf::Vector2f predicted_interpolated_pos = player_connections[i].Predict(game_time, dt);
+					predicted_interpolated_pos = player_connections[i].InterpolateToPredicted(dt, predicted_interpolated_pos);*/
+
 					// Construct message with actual positon.
 					TankMessage interpolated_msg = {
 						game_time,
 						player_connections[i].message_history[0].id,
 						interpolated_pos
+						/*predicted_interpolated_pos*/
 					};
 					// Update game using message containign actual position update.
 					game.NetworkUpdate(dt, interpolated_msg);
