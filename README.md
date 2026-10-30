@@ -2,6 +2,9 @@ CMP425 / CMP501
 Lab 6: position interpolation example - by Andrei Boiko
 Built using SFML 3
 
+Student Name: Calvin Chadwick
+Student Number: 2309198
+
 ### Key changes from Lab 5
 - Updated connecton state handling:
 	- Setting receiving socket to non-blocking mode to avoid unexpected blocking recieve call.
