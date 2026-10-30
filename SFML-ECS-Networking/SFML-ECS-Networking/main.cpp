@@ -87,7 +87,7 @@ int main() {
 	std::vector<Connection> player_connections;
 
 	// Other game parameters.
-	float send_rate = 0.1f;
+	float send_rate = 0.1f;	// Test interpolation method using send_rate = 0.5f
 	float reconnect_delay = 1.f;
 	float send_timer = 1.f;
 	bool is_connected = false;

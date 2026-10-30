@@ -38,7 +38,10 @@ struct Connection
 
 		if (message_history.size() > 1) { // Make sure we have at least 2 messages for Linear interpolation.
 			// Calculate new position by interpolating between last two known positons.
-			return (message_history[1].position + (message_history[0].position - message_history[1].position) * inter_t);
+			//return (message_history[1].position + (message_history[0].position - message_history[1].position) * inter_t);
+
+			// Remember that message_history[0].position is the latest position (v1).
+			return (1 - inter_t) * message_history[1].position + inter_t * message_history[0].position;
 		}
 		else
 			return message_history[0].position; // Just return the last known position.
