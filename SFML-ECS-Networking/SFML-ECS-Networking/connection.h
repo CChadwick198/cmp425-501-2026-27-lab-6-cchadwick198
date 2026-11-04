@@ -6,7 +6,7 @@
 enum PredictionMethod { None, Linear, Quadratic, Cubic };
 enum ConnState {NotReady, Ready, Disconnected};
 
-constexpr PredictionMethod PREDICTION_METHOD_IN_USE = Quadratic;
+constexpr PredictionMethod PREDICTION_METHOD_IN_USE = Linear;
 
 // Fixme:: ideally we should link specific tank/character to each connection,
 // rather than assuming the order in which connections are made is the same as
@@ -51,7 +51,7 @@ public:	// For now, just have everything public cause I don't want to sort out t
 			return message_history[0].position; // Just return the last known position.
 	}
 
-	sf::Vector2f InterpolateToPredicted(float dt, sf::Vector2f pp) {
+	sf::Vector2f InterpolateToPredicted(float dt, sf::Vector2f predicted_position) {
 		// Calculate interpolation step
 		float step = 0.f;
 
@@ -71,10 +71,12 @@ public:	// For now, just have everything public cause I don't want to sort out t
 
 		if (!message_history.empty()) { // Make sure we have at least 2 messages for Linear interpolation.
 			// Remember that message_history[0].position is the latest position (v1).
-			return (1 - inter_t) * message_history[0].position + inter_t * pp;
+			return (1 - inter_t) * message_history[0].position + inter_t * predicted_position;
 		}
 		else
-			return pp; // Just return the predicted position.
+		{
+			return predicted_position; // Just return the predicted position.
+		}
 	}
 
 	sf::Vector2f Predict(float t, float dt) {
@@ -105,7 +107,7 @@ public:	// For now, just have everything public cause I don't want to sort out t
 
 	sf::Vector2f LinearPrediction(float dt) {
 		// Check to see if we have enough known positions to do prediction.
-		if (message_history.size() < 2) {return message_history[0].position; }	// Just return the last known position.
+		if (message_history.size() < 2) { return message_history[0].position; }	// Just return the last known position.
 
 		sf::Vector2f velocity = (message_history[0].position - message_history[1].position) / dt;
 
