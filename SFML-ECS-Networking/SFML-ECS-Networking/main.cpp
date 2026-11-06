@@ -6,6 +6,8 @@
 #include "utils.h"
 #include "connection.h"
 
+#include <ctime>
+
 /* Uncomment to enable debug messages. */
 //#define DEBUG
 
@@ -153,6 +155,7 @@ int main() {
 				if(player_connections.size() == 1)
 					game_time = 0.f; 
 
+
 			}
 
 			// Reset states before waiting to avoid stale Ready state causing a blocking receive.
@@ -242,6 +245,7 @@ int main() {
 						player_connections[i].message_history[0].id,
 						//interpolated_pos
 						predicted_pos
+						//predicted_interpolated_pos
 					};
 					// Update game using message containign actual position update.
 					game.NetworkUpdate(dt, interpolated_msg);
@@ -260,9 +264,18 @@ int main() {
 				sf::Socket::Status status = player_socket->connect(sf::IpAddress::LocalHost, observer_port);
 				if (status == sf::Socket::Status::Done) {
 					Utils::printMsg("Connected!", MessageType::success);
-					is_connected = true;
+					is_connected = true;	// Note: should be set to false until we have synchronised the clock.
 					// Add new tank with blue body and black barrel at the centre of the window.
 					game.AddTank("body_blue", "barrel_black", { 320, 240 });
+
+					sf::Packet synchronization_packet;
+					
+					// TO DO: Synchronise player (client) and observer (server) clock.
+						// Start clock and send request packet to observer.
+						// When player recieves observer's response packet, stop the clock and get elapsed time.
+						// Do this multiple times to calculate a mean/average.
+						// This gets us the Time offset.
+						// Note: include Local Host IP of this player in the packet so that the observer can manage multiple players connecting.
 				}
 				else {
 					Utils::printMsg("Failed to connect to observer. Will try again later.", MessageType::warning);

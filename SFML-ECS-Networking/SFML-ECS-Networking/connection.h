@@ -6,7 +6,7 @@
 enum PredictionMethod { None, Linear, Quadratic, Cubic };
 enum ConnState {NotReady, Ready, Disconnected};
 
-constexpr PredictionMethod PREDICTION_METHOD_IN_USE = Linear;
+constexpr PredictionMethod PREDICTION_METHOD_IN_USE = Quadratic;
 
 // Fixme:: ideally we should link specific tank/character to each connection,
 // rather than assuming the order in which connections are made is the same as
@@ -109,7 +109,10 @@ public:	// For now, just have everything public cause I don't want to sort out t
 		// Check to see if we have enough known positions to do prediction.
 		if (message_history.size() < 2) { return message_history[0].position; }	// Just return the last known position.
 
-		sf::Vector2f velocity = (message_history[0].position - message_history[1].position) / dt;
+		float delta_time = message_history[0].time - message_history[1].time;
+		if (delta_time < 0) { return message_history[0].position; }
+
+		sf::Vector2f velocity = (message_history[0].position - message_history[1].position) / delta_time;
 
 		return message_history[0].position + velocity * prediction_time;
 	}
@@ -118,10 +121,10 @@ public:	// For now, just have everything public cause I don't want to sort out t
 		// Check to see if we have enough known positions to do prediction.
 		if (message_history.size() < 3) { return message_history[0].position; }	// Just return the last known position.
 
-		sf::Vector2f velocity1 = (message_history[1].position - message_history[2].position) / dt;
-		sf::Vector2f velocity2 = (message_history[0].position - message_history[1].position) / dt;
+		sf::Vector2f velocity1 = (message_history[1].position - message_history[2].position) / (message_history[1].time - message_history[2].time);
+		sf::Vector2f velocity2 = (message_history[0].position - message_history[1].position) / (message_history[0].time - message_history[1].time);
 
-		sf::Vector2f acc = (velocity2 - velocity1) / dt;
+		sf::Vector2f acc = (velocity2 - velocity1) / (message_history[0].time - message_history[2].time);
 
 		// predicted position = p0 + v2 * pt + 0.5 * A * pt^2
 		sf::Vector2f predicted_position = message_history[0].position + velocity2 * prediction_time + 0.5f * acc * prediction_time * prediction_time;
